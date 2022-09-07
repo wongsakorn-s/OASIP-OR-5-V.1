@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+    dbor5:
+        image: mysql
+        container_name: dbor5
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: 5599
+            MYSQL_DATABASE: mydb
+            MYSQL_USER: adminor5
+            MYSQL_PASSWORD: 5599
+            LANG: en_US.UTF-8
+            TZ: Asia/Bangkok
+        volumes:
+            - ./mysql/script.sql
+
+    beor5:
+        image: beimg
+        container_name: beor5
+        build:
+            context: ./BE
+        depends_on:
+            - dbor5
+        links:
+            - dbor5:mysql
+        ports:
+            - 5000:8080
+        restart: always
+
+    feor5:
+        image: feimg
+        container_name: feor5
+        build:
+            context: ./FE/OASIP-OR5-Frontend
+        depends_on:
+            - dbor5
+            - beor5
+        ports:
+            - 80:80
+
+    reverseproxy:
+        image: nginx:1.17.10
+        container_name: reverseproxy
+        depends_on:
+            - dbor5
+            - beor5
+            - feor5
+        volumes:
+            - ./reverse-proxy/nginx.conf:/etc/nginx/nginx.conf
+        ports:
+            - 8081:80
