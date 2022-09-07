@@ -1,4 +1,0 @@
-FROM openjdk:11
-FROM maven:latest
-ADD ./OASIP-OR5-Backend/target/OasipOr5Application-0.0.1-SNAPSHOT.jar testbackend.jar
-ENTRYPOINT ["java", "-jar", "testbackend.jar"]
